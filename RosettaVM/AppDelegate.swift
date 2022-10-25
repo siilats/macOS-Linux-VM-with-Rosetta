@@ -275,14 +275,23 @@ class AppDelegate: NSObject, NSApplicationDelegate, VZVirtualMachineDelegate {
         virtualMachineConfiguration.keyboards = [VZUSBKeyboardConfiguration()]
         virtualMachineConfiguration.pointingDevices = [VZUSBScreenCoordinatePointingDeviceConfiguration()]
         virtualMachineConfiguration.consoleDevices = [createSpiceAgentConsoleDeviceConfiguration()]
-        var directories: [String : VZSharedDirectory] = Dictionary()
-        var directoryShares: [DirectoryShare] = []
-        directoryShares.append(DirectoryShare(name: "home", path: URL(filePath: "/home"), readOnly: false))
-        directoryShares.forEach { directories[$0.name] = VZSharedDirectory(url: $0.path, readOnly: $0.readOnly) }
+//        var directories: [String : VZSharedDirectory] = Dictionary()
+//        var directoryShares: [DirectoryShare] = []
+//        directoryShares.append(DirectoryShare(name: "home", path: URL(filePath: "/home"), readOnly: false))
+//        directoryShares.forEach { directories[$0.name] = VZSharedDirectory(url: $0.path, readOnly: $0.readOnly) }
+//
+//        let automountTag = VZVirtioFileSystemDeviceConfiguration.macOSGuestAutomountTag
+//        let sharingDevice = VZVirtioFileSystemDeviceConfiguration(tag: automountTag)
+//        sharingDevice.share = VZMultipleDirectoryShare(directories: directories)
+        let homeURL = URL(fileURLWithPath: NSHomeDirectory() )
+        let sharedDirectory = VZSharedDirectory(url: homeURL, readOnly: false)
+        let singleDirectoryShare = VZSingleDirectoryShare(directory: sharedDirectory)
 
-        let automountTag = VZVirtioFileSystemDeviceConfiguration.macOSGuestAutomountTag
-        let sharingDevice = VZVirtioFileSystemDeviceConfiguration(tag: automountTag)
-        sharingDevice.share = VZMultipleDirectoryShare(directories: directories)
+        // Create the VZVirtioFileSystemDeviceConfiguration and assign it a unique tag.
+        let sharingDevice = VZVirtioFileSystemDeviceConfiguration(tag: "home")
+        sharingDevice.share = singleDirectoryShare
+
+
         
 //        let sharedDirectory = VZSharedDirectory(url: URL(string: "/home")!, readOnly: false)
 //        let share = VZSingleDirectoryShare(directory: sharedDirectory)
@@ -300,8 +309,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, VZVirtualMachineDelegate {
             let fileSystemDevice = VZVirtioFileSystemDeviceConfiguration(tag: tag)
             fileSystemDevice.share = rosettaDirectoryShare
 
-            // virtualMachineConfiguration.directorySharingDevices = [ fileSystemDevice, sharingDevice]
-            virtualMachineConfiguration.directorySharingDevices = [ fileSystemDevice]
+            virtualMachineConfiguration.directorySharingDevices = [ fileSystemDevice, sharingDevice]
+            // virtualMachineConfiguration.directorySharingDevices = [ fileSystemDevice]
         } catch {
             throw RosettaVMError("Rosetta is not available")
         }
