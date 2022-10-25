@@ -283,7 +283,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, VZVirtualMachineDelegate {
 //        let automountTag = VZVirtioFileSystemDeviceConfiguration.macOSGuestAutomountTag
 //        let sharingDevice = VZVirtioFileSystemDeviceConfiguration(tag: automountTag)
 //        sharingDevice.share = VZMultipleDirectoryShare(directories: directories)
-        let homeURL = URL(fileURLWithPath: NSHomeDirectory() )
+        let homeURL = URL(fileURLWithPath: NSTemporaryDirectory() )
         let sharedDirectory = VZSharedDirectory(url: homeURL, readOnly: false)
         let singleDirectoryShare = VZSingleDirectoryShare(directory: sharedDirectory)
 
