@@ -7,7 +7,7 @@ The app delegate that sets up and starts the virtual machine.
 
 import Virtualization
 
-let vmBundlePath = NSHomeDirectory() + "/RosettaVM.bundle/"
+let vmBundlePath = NSHomeDirectory() + "/Ubuntu22/"
 let mainDiskImagePath = vmBundlePath + "Disk.img"
 let efiVariableStorePath = vmBundlePath + "NVRAM"
 let machineIdentifierPath = vmBundlePath + "MachineIdentifier"
@@ -126,7 +126,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, VZVirtualMachineDelegate {
     }
 
     private func computeMemorySize() -> UInt64 {
-        var memorySize = (4 * 1024 * 1024 * 1024) as UInt64 // 4 GiB
+        var memorySize = (8 * 1024 * 1024 * 1024) as UInt64 // 4 GiB
         memorySize = max(memorySize, VZVirtualMachineConfiguration.minimumAllowedMemorySize)
         memorySize = min(memorySize, VZVirtualMachineConfiguration.maximumAllowedMemorySize)
 

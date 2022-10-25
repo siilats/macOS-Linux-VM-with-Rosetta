@@ -19,7 +19,7 @@ do the following:
    and login to your Apple Developer account (a free account is sufficient)
 1. Close the settings window
 1. Clone the git repository off GitHub, e.g.
-   `git clone https://github.com/diddledani/macOS-Linux-VM-with-Rosetta.git`
+   `git clone https://github.com/siilats/macOS-Linux-VM-with-Rosetta.git`
 1. Open the `RosettaVM.xcodeproj` project file in XCode
 1. Click the left-hand sidebar entry at the top of the tree labelled
    `RosettaVM`
