@@ -11,6 +11,11 @@ let vmBundlePath = NSHomeDirectory() + "/Ubuntu22/"
 let mainDiskImagePath = vmBundlePath + "Disk.img"
 let efiVariableStorePath = vmBundlePath + "NVRAM"
 let machineIdentifierPath = vmBundlePath + "MachineIdentifier"
+struct DirectoryShare {
+  let name: String
+  let path: URL
+  let readOnly: Bool
+}
 
 struct RosettaVMError: Error, LocalizedError {
     let errorDescription: String?
@@ -98,7 +103,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, VZVirtualMachineDelegate {
 
         do {
             // 64 GB disk space.
-            try mainDiskFileHandle.truncate(atOffset: 64 * 1024 * 1024 * 1024)
+            try mainDiskFileHandle.truncate(atOffset: 40 * 1024 * 1024 * 1024)
         } catch {
             throw RosettaVMError("Could not truncate the VM's main disk image.")
         }
@@ -126,7 +131,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, VZVirtualMachineDelegate {
     }
 
     private func computeMemorySize() -> UInt64 {
-        var memorySize = (8 * 1024 * 1024 * 1024) as UInt64 // 4 GiB
+        var memorySize = (9 * 1024 * 1024 * 1024) as UInt64 // 4 GiB
         memorySize = max(memorySize, VZVirtualMachineConfiguration.minimumAllowedMemorySize)
         memorySize = min(memorySize, VZVirtualMachineConfiguration.maximumAllowedMemorySize)
 
@@ -270,7 +275,23 @@ class AppDelegate: NSObject, NSApplicationDelegate, VZVirtualMachineDelegate {
         virtualMachineConfiguration.keyboards = [VZUSBKeyboardConfiguration()]
         virtualMachineConfiguration.pointingDevices = [VZUSBScreenCoordinatePointingDeviceConfiguration()]
         virtualMachineConfiguration.consoleDevices = [createSpiceAgentConsoleDeviceConfiguration()]
+        var directories: [String : VZSharedDirectory] = Dictionary()
+        var directoryShares: [DirectoryShare] = []
+        directoryShares.append(DirectoryShare(name: "home", path: URL(filePath: "/home"), readOnly: false))
+        directoryShares.forEach { directories[$0.name] = VZSharedDirectory(url: $0.path, readOnly: $0.readOnly) }
 
+        let automountTag = VZVirtioFileSystemDeviceConfiguration.macOSGuestAutomountTag
+        let sharingDevice = VZVirtioFileSystemDeviceConfiguration(tag: automountTag)
+        sharingDevice.share = VZMultipleDirectoryShare(directories: directories)
+        
+//        let sharedDirectory = VZSharedDirectory(url: URL(string: "/home")!, readOnly: false)
+//        let share = VZSingleDirectoryShare(directory: sharedDirectory)
+//
+//        let tag2 = VZVirtioFileSystemDeviceConfiguration.macOSGuestAutomountTag
+//        let sharingDevice = VZVirtioFileSystemDeviceConfiguration(tag: tag2)
+//        sharingDevice.share = share
+
+      
 #if arch(arm64)
         let tag = "ROSETTA"
         do {
@@ -279,7 +300,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, VZVirtualMachineDelegate {
             let fileSystemDevice = VZVirtioFileSystemDeviceConfiguration(tag: tag)
             fileSystemDevice.share = rosettaDirectoryShare
 
-            virtualMachineConfiguration.directorySharingDevices = [ fileSystemDevice ]
+            // virtualMachineConfiguration.directorySharingDevices = [ fileSystemDevice, sharingDevice]
+            virtualMachineConfiguration.directorySharingDevices = [ fileSystemDevice]
         } catch {
             throw RosettaVMError("Rosetta is not available")
         }
