@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "8FF8298827500C060037FA83"
-               BuildableName = "RosettaVM.app"
+               BuildableName = "RosettaUbuntu22.app"
                BlueprintName = "RosettaVM"
                ReferencedContainer = "container:RosettaVM.xcodeproj">
             </BuildableReference>
@@ -45,7 +45,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "8FF8298827500C060037FA83"
-            BuildableName = "RosettaVM.app"
+            BuildableName = "RosettaUbuntu22.app"
             BlueprintName = "RosettaVM"
             ReferencedContainer = "container:RosettaVM.xcodeproj">
          </BuildableReference>
@@ -62,7 +62,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "8FF8298827500C060037FA83"
-            BuildableName = "RosettaVM.app"
+            BuildableName = "RosettaUbuntu22.app"
             BlueprintName = "RosettaVM"
             ReferencedContainer = "container:RosettaVM.xcodeproj">
          </BuildableReference>

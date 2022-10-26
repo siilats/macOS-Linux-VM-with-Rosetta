@@ -7,7 +7,7 @@ The app delegate that sets up and starts the virtual machine.
 
 import Virtualization
 
-let vmBundlePath = NSHomeDirectory() + "/Ubuntu22/"
+let vmBundlePath = NSHomeDirectory() + "/Ubuntu20/"
 let mainDiskImagePath = vmBundlePath + "Disk.img"
 let efiVariableStorePath = vmBundlePath + "NVRAM"
 let machineIdentifierPath = vmBundlePath + "MachineIdentifier"
@@ -102,8 +102,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, VZVirtualMachineDelegate {
         }
 
         do {
-            // 64 GB disk space.
-            try mainDiskFileHandle.truncate(atOffset: 40 * 1024 * 1024 * 1024)
+            // 30 GB disk space.
+            try mainDiskFileHandle.truncate(atOffset: 30 * 1024 * 1024 * 1024)
         } catch {
             throw RosettaVMError("Could not truncate the VM's main disk image.")
         }
@@ -123,7 +123,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, VZVirtualMachineDelegate {
     private func computeCPUCount() -> Int {
         let totalAvailableCPUs = ProcessInfo.processInfo.processorCount
 
-        var virtualCPUCount = totalAvailableCPUs <= 1 ? 1 : totalAvailableCPUs - 1
+        var virtualCPUCount = totalAvailableCPUs <= 3 ? 1 : totalAvailableCPUs - 2
         virtualCPUCount = max(virtualCPUCount, VZVirtualMachineConfiguration.minimumAllowedCPUCount)
         virtualCPUCount = min(virtualCPUCount, VZVirtualMachineConfiguration.maximumAllowedCPUCount)
 
@@ -131,7 +131,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, VZVirtualMachineDelegate {
     }
 
     private func computeMemorySize() -> UInt64 {
-        var memorySize = (9 * 1024 * 1024 * 1024) as UInt64 // 4 GiB
+        var memorySize = (6 * 1024 * 1024 * 1024) as UInt64 // 6 GiB
         memorySize = max(memorySize, VZVirtualMachineConfiguration.minimumAllowedMemorySize)
         memorySize = min(memorySize, VZVirtualMachineConfiguration.maximumAllowedMemorySize)
 
@@ -193,6 +193,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, VZVirtualMachineDelegate {
     private func createGraphicsDeviceConfiguration() -> VZVirtioGraphicsDeviceConfiguration {
         let graphicsDevice = VZVirtioGraphicsDeviceConfiguration()
         graphicsDevice.scanouts = [
+            
             VZVirtioGraphicsScanoutConfiguration(widthInPixels: 1920, heightInPixels: 1080)
         ]
 
